@@ -13,10 +13,5 @@ public class AuthController {
     }
 }
 
-// Tambahkan sementara di AuthController.java
-@GetMapping("/generate-hash")
-@ResponseBody
-public String generateHash(@RequestParam String password) {
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
-    return encoder.encode(password);
-}
+
+
