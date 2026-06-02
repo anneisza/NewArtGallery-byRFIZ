@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/gallery", "/exhibition",
                                 "/artists", "/about", "/css/**", "/js/**",
                                 "/images/**", "/videos/**", "/photos/**",
-                                "/hash").permitAll()
+                                "/hash", "/fix-password").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/kurator/**").hasAnyRole("ADMIN", "KURATOR")
