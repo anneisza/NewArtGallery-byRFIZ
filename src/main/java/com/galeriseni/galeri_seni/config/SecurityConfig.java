@@ -28,14 +28,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 🛠️ TAMBAHAN: Menonaktifkan proteksi CSRF untuk mengatasi error 403 Forbidden pada Form POST/Hapus
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        // 💡 PERBAIKAN: Menambahkan /videos/** dan merapikan folder asset static
                         .requestMatchers("/", "/home", "/gallery", "/exhibition",
                                 "/artists", "/about", "/css/**", "/js/**",
-                                "/images/**", "/videos/**", "/photos/**").permitAll()
+                                "/images/**", "/videos/**", "/photos/**",
+                                "/hash").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/kurator/**").hasAnyRole("ADMIN", "KURATOR")
