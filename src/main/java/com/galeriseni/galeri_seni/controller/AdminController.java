@@ -115,11 +115,16 @@ public class AdminController {
 
     private String saveFile(MultipartFile file, String subfolder) throws IOException {
         if (file == null || file.isEmpty()) return null;
-        String uploadDir = "uploads/" + subfolder + "/";
+
+        // 1. Simpan fisik file langsung ke dalam folder resources/static/assets/
+        String uploadDir = "src/main/resources/static/assets/" + subfolder + "/";
         Files.createDirectories(Paths.get(uploadDir));
+
         String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
         Files.write(Paths.get(uploadDir + filename), file.getBytes());
-        return "/" + uploadDir + filename;
+
+        // 2. URL yang disimpan ke database menggunakan /assets/...
+        return "/assets/" + subfolder + "/" + filename;
     }
 
     @PostMapping("/seniman/tambah")
@@ -127,13 +132,11 @@ public class AdminController {
                                 @RequestParam(required = false) String specialty,
                                 @RequestParam(required = false) String bio,
                                 @RequestParam(value = "photoFile", required = false) MultipartFile photoFile,
-                                @RequestParam(value = "photoUrl", required = false) String photoUrl,
                                 RedirectAttributes redirectAttr) throws IOException {
-        // File upload prioritas utama, URL sebagai fallback
+
+        // Langsung simpan file (jika ada)
         String finalPhotoUrl = saveFile(photoFile, "artists");
-        if (finalPhotoUrl == null && photoUrl != null && !photoUrl.isBlank()) {
-            finalPhotoUrl = photoUrl;
-        }
+
         artistService.create(name, specialty, bio, finalPhotoUrl);
         redirectAttr.addFlashAttribute("successMessage", "Seniman berhasil ditambahkan.");
         return "redirect:/admin/seniman";
@@ -145,13 +148,22 @@ public class AdminController {
                               @RequestParam(required = false) String specialty,
                               @RequestParam(required = false) String bio,
                               @RequestParam(value = "photoFile", required = false) MultipartFile photoFile,
-                              @RequestParam(value = "photoUrl", required = false) String photoUrl,
                               RedirectAttributes redirectAttr) throws IOException {
-        // File upload prioritas utama, URL sebagai fallback
+
+        // 1. Ambil nama file baru jika ada file yang diupload lewat form
         String finalPhotoUrl = saveFile(photoFile, "artists");
-        if (finalPhotoUrl == null && photoUrl != null && !photoUrl.isBlank()) {
-            finalPhotoUrl = photoUrl;
+
+        // 2. Jika tidak ada file baru yang diupload (null), cari data lama di database
+        if (finalPhotoUrl == null) {
+            // Menggunakan .orElse(null) untuk mengatasi masalah "Incompatible types Found Optional"
+            Artist existingArtist = artistService.findById(id).orElse(null);
+
+            if (existingArtist != null) {
+                // Menggunakan .getPhoto() sesuai dengan properti di entity Artist kamu
+                finalPhotoUrl = existingArtist.getPhoto();
+            }
         }
+
         artistService.update(id, name, specialty, bio, finalPhotoUrl);
         redirectAttr.addFlashAttribute("successMessage", "Seniman berhasil diperbarui.");
         return "redirect:/admin/seniman";
@@ -322,7 +334,10 @@ public class AdminController {
     public String bypassAtribusiAi(Model model, Authentication auth) {
         model.addAttribute("user", getCurrentUser(auth));
         model.addAttribute("artworks", artworkService.findAll());
-        model.addAttribute("attributions", aiAttributionService.findAll());
+
+        // UBAH "attributions" MENJADI "aiAttributions" SESUAI DI HTML
+        model.addAttribute("aiAttributions", aiAttributionService.findAll());
+
         return "admin/bypass-atribusi-ai";
     }
 

@@ -21,7 +21,13 @@
             --accent: #ffffff;
         }
 
-        body { background:var(--bg); color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; overflow-x: hidden; }
+        body {
+                    background-image: linear-gradient(rgba(10, 10, 15, 0.85), rgba(10, 10, 15, 0.85)),
+                              url('https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1920');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        color:var(--text); font-family:'Plus Jakarta Sans',sans-serif; overflow-x: hidden; }
 
         h1, h2, .page-header h1, .section-heading, .nav-brand, .artwork-title {
             font-family: 'Playfair Display', serif !important;

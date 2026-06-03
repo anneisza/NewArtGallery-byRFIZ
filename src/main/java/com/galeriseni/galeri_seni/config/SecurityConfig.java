@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/home", "/gallery", "/exhibition",
                                 "/artists", "/about", "/css/**", "/js/**",
                                 "/images/**", "/videos/**", "/photos/**",
+                                "/assets/**", // ◄ TAMBAHKAN ATAU GANTI JADI INI
                                 "/hash", "/fix-password").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")

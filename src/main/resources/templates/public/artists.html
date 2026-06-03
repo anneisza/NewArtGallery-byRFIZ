@@ -9,7 +9,6 @@
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         :root {
-            /* Sinkronisasi Tema Gelap Premium / Mamba */
             --bg: #0d0d0d;
             --bg2: #121212;
             --bg3: #181818;
@@ -27,7 +26,6 @@
             font-family: 'Playfair Display', serif !important;
         }
 
-        /* Navigasi Transparan Blur Blended */
         nav {
             display:flex; align-items:center; justify-content:space-between;
             padding:1.5rem 3rem; background:rgba(13, 13, 13, 0.8);
@@ -44,7 +42,6 @@
         h1 { font-size:3rem; font-weight: 400; margin-bottom:0.75rem; text-align: center; }
         p.sub { color:var(--text-muted); margin-bottom:5rem; text-align: center; font-size: 0.95rem; font-weight: 300; }
 
-        /* ==================== STYLE MAIN COMPONENT: CIRCULAR TESTIMONIALS ==================== */
         .testimonial-container {
             width: 100%;
             margin-top: 2rem;
@@ -64,7 +61,6 @@
             }
         }
 
-        /* 3D Stack Image Viewer Minimalis */
         .image-container {
             position: relative;
             width: 100%;
@@ -77,14 +73,14 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 4px; /* Siku tajam elegan khas galeri mamba */
+            border-radius: 4px;
             box-shadow: 0 40px 80px rgba(0, 0, 0, 0.9);
             border: 1px solid var(--border);
             transform-style: preserve-3d;
             backface-visibility: hidden;
+            opacity: 0;
         }
 
-        /* Content & Text Styles */
         .testimonial-content {
             display: flex;
             flex-direction: column;
@@ -118,7 +114,6 @@
             min-height: 100px;
         }
 
-        /* Word Span Animation Effects */
         .word {
             display: inline-block;
             opacity: 0;
@@ -126,7 +121,6 @@
             transform: translateY(5px);
         }
 
-        /* Navigation Circle Button Dashboard */
         .arrow-buttons {
             display: flex;
             gap: 1rem;
@@ -150,7 +144,7 @@
 
         .arrow-button:hover {
             background-color: var(--arrow-hover);
-            color: #000000; /* Balik warna jadi hitam pekat saat hover */
+            color: #000000;
             transform: scale(1.03);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
@@ -160,7 +154,6 @@
 </head>
 <body>
 
-<!-- GANTI KODE DI ATAS DENGAN SATU BARIS INI: -->
 <div th:replace="~{layout/navbar-public :: navbar('artists')}"></div>
 
 <div class="content">
@@ -172,23 +165,13 @@
 
             <div class="image-container" id="imageContainer">
                 <div th:each="artist, iter : ${artists}">
-                    <img th:if="${artist.photoUrl != null}"
-                         th:src="${artist.photoUrl}"
+                    <img th:src="${artist.photo != null && artist.photo != '' ? artist.photo : 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1000'}"
                          th:alt="${artist.name}"
                          class="testimonial-image"
                          th:data-index="${iter.index}"
                          th:data-name="${artist.name}"
-                         th:data-specialty="${artist.specialty}"
-                         th:data-works="${artist.totalWorks + ' Masterpieces Created.'}">
-
-                    <img th:unless="${artist.photoUrl != null}"
-                         src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=1000"
-                         th:alt="${artist.name}"
-                         class="testimonial-image"
-                         th:data-index="${iter.index}"
-                         th:data-name="${artist.name}"
-                         th:data-specialty="${artist.specialty}"
-                         th:data-works="${artist.totalWorks + ' Masterpieces Created.'}">
+                         th:data-specialty="${artist.specialty != null && artist.specialty != '' ? artist.specialty : 'General Artist'}"
+                         th:data-bio="${artist.bio != null && artist.bio != '' ? artist.bio : 'No biography available yet.'}">
                 </div>
             </div>
 
@@ -196,7 +179,7 @@
                 <div id="textWrapper">
                     <h3 class="name" id="artistName">Artist Name</h3>
                     <p class="designation" id="artistSpecialty">Specialty</p>
-                    <p class="quote" id="artistQuote">Total Works</p>
+                    <p class="quote" id="artistBio">Biography text goes here...</p>
                 </div>
 
                 <div class="arrow-buttons">
@@ -218,19 +201,22 @@
         const images = document.querySelectorAll('.testimonial-image');
         const totalItems = images.length;
 
-        if (totalItems === 0) return;
+        if (totalItems === 0) {
+            document.getElementById('artistName').innerText = "No Artists Available";
+            document.getElementById('artistSpecialty').innerText = "-";
+            document.getElementById('artistBio').innerText = "Please add artists from the admin dashboard.";
+            return;
+        }
 
         let activeIndex = 0;
         let containerWidth = document.getElementById('imageContainer').offsetWidth;
 
         function calculateGap(width) {
             const minWidth = 1024;
-            const maxWidth = 1456;
             const minGap = 50;
             const maxGap = 80;
             if (width <= minWidth) return minGap;
-            if (width >= maxWidth) return Math.max(minGap, maxGap + 0.05 * (width - maxWidth));
-            return minGap + (maxGap - minGap) * ((width - minWidth) / (maxWidth - minWidth));
+            return minGap + (maxGap - minGap) * ((width - minWidth) / (1456 - minWidth));
         }
 
         function updateImagesStyle() {
@@ -249,15 +235,15 @@
                         duration: 0.8, ease: "power2.out"
                     });
                     updateTextContent(img);
-                } else if (isLeft) {
+                } else if (isLeft && totalItems > 1) {
                     gsap.to(img, {
-                        zIndex: 2, opacity: 0.7, pointerEvents: "auto",
+                        zIndex: 2, opacity: 0.4, pointerEvents: "auto",
                         x: -gap, y: -maxStickUp, scale: 0.85, rotateY: 15,
                         duration: 0.8, ease: "power2.out"
                     });
-                } else if (isRight) {
+                } else if (isRight && totalItems > 1) {
                     gsap.to(img, {
-                        zIndex: 2, opacity: 0.7, pointerEvents: "auto",
+                        zIndex: 2, opacity: 0.4, pointerEvents: "auto",
                         x: gap, y: -maxStickUp, scale: 0.85, rotateY: -15,
                         duration: 0.8, ease: "power2.out"
                     });
@@ -274,37 +260,39 @@
         function updateTextContent(activeImg) {
             const name = activeImg.getAttribute('data-name');
             const specialty = activeImg.getAttribute('data-specialty');
-            const quoteText = activeImg.getAttribute('data-works');
+            const bioText = activeImg.getAttribute('data-bio');
 
             document.getElementById('artistName').innerText = name;
             document.getElementById('artistSpecialty').innerText = specialty;
 
-            const quoteElement = document.getElementById('artistQuote');
-            quoteElement.innerHTML = '';
+            const bioElement = document.getElementById('artistBio');
+            bioElement.innerHTML = '';
 
-            quoteText.split(" ").forEach((word, i) => {
+            bioText.split(" ").forEach((word, i) => {
                 const span = document.createElement('span');
                 span.className = 'word';
                 span.innerHTML = word + '&nbsp;';
-                quoteElement.appendChild(span);
+                bioElement.appendChild(span);
 
                 gsap.to(span, {
                     opacity: 1,
                     filter: "blur(0px)",
                     y: 0,
-                    delay: i * 0.03,
-                    duration: 0.3,
+                    delay: i * 0.015,
+                    duration: 0.25,
                     ease: "power1.out"
                 });
             });
         }
 
         function showNext() {
+            if (totalItems <= 1) return;
             activeIndex = (activeIndex + 1) % totalItems;
             updateImagesStyle();
         }
 
         function showPrev() {
+            if (totalItems <= 1) return;
             activeIndex = (activeIndex - 1 + totalItems) % totalItems;
             updateImagesStyle();
         }

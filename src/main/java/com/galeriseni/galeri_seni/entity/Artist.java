@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Artist {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,8 +28,8 @@ public class Artist {
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Column(name = "photo_url")
-    private String photoUrl;
+    @Column(name = "photo")
+    private String photo;
 
     @Column(name = "total_works")
     private Integer totalWorks = 0;

@@ -23,22 +23,22 @@ public class ArtistService {
 
     public Artist save(Artist artist) { return artistRepository.save(artist); }
 
-    public Artist create(String name, String specialty, String bio, String photoUrl) {
+    public Artist create(String name, String specialty, String bio, String photo) {
         Artist artist = new Artist();
         artist.setName(name);
         artist.setSpecialty(specialty);
         artist.setBio(bio);
-        artist.setPhotoUrl(photoUrl);
+        artist.setPhoto(photo);
         return artistRepository.save(artist);
     }
 
-    public Artist update(Long id, String name, String specialty, String bio, String photoUrl) {
+    public Artist update(Long id, String name, String specialty, String bio, String photo) {
         Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Seniman tidak ditemukan"));
         artist.setName(name);
         artist.setSpecialty(specialty);
         artist.setBio(bio);
-        if (photoUrl != null && !photoUrl.isBlank()) artist.setPhotoUrl(photoUrl);
+        if (photo != null && !photo.isBlank()) artist.setPhoto(photo);
         return artistRepository.save(artist);
     }
 

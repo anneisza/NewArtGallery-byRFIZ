@@ -146,7 +146,7 @@
 
     <div class="card">
         <div class="card-title">Tambah Karya Seni Baru</div>
-        <form th:action="@{/admin/karya-seni/tambah}" method="post">
+        <form th:action="@{/admin/karya-seni/tambah}" method="post" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group">
                     <label>Judul Karya</label>
@@ -173,24 +173,18 @@
                     <input type="number" name="yearCreated" placeholder="2024">
                 </div>
             </div>
-            <!-- Tambah enctype di tag form tambah -->
-            <form th:action="@{/admin/karya-seni/tambah}" method="post" enctype="multipart/form-data">
 
                 <!-- Ganti input gambar jadi 2 opsi -->
                 <div class="form-group">
                     <label>Upload File Gambar</label>
                     <input type="file" name="imageFile" accept="image/*">
                 </div>
-                <div class="form-group">
-                    <label>Atau Masukkan URL Gambar</label>
-                    <input type="text" name="imageUrl" placeholder="https://example.com/image.jpg">
-                </div>
             <div class="form-group">
                 <label>Deskripsi</label>
                 <textarea name="description" rows="4" placeholder="Deskripsi kuratorial mengenai makna seni..."></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Tambah Karya</button>
-        </form>
+            </form>
     </div>
 </div>
 
@@ -201,7 +195,8 @@
             <button type="button" class="btn btn-secondary" onclick="closeEditModal()" style="padding: 0.3rem 0.7rem;">✕</button>
         </div>
 
-        <form id="editForm" method="post">
+        <!-- Tambah enctype di form edit -->
+        <form id="editForm" method="post" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group">
                     <label>Judul Karya</label>
@@ -228,17 +223,12 @@
                     <input type="number" id="editYear" name="yearCreated">
                 </div>
             </div>
-            <!-- Tambah enctype di form edit -->
-            <form id="editForm" method="post" enctype="multipart/form-data">
+
 
                 <!-- Ganti input URL Gambar jadi 2 opsi -->
                 <div class="form-group">
                     <label>Upload File Gambar Baru</label>
                     <input type="file" name="imageFile" accept="image/*">
-                </div>
-                <div class="form-group">
-                    <label>Atau Ganti dengan URL Gambar</label>
-                    <input type="text" id="editImageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
                 </div>
             <div class="form-group">
                 <label>Deskripsi</label>
@@ -248,40 +238,39 @@
                 <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             </div>
-        </form>
+            </form> </form>
     </div>
 </div>
 
 <script>
     function openEditModal(button) {
-        // 1. Ambil data lama dari atribut tag tombol yang diklik
-        const id = button.getAttribute('data-id');
-        const title = button.getAttribute('data-title');
-        const artistId = button.getAttribute('data-artist');
-        const exhibitionId = button.getAttribute('data-exhibition');
-        const year = button.getAttribute('data-year');
-        const image = button.getAttribute('data-image');
-        const desc = button.getAttribute('data-desc');
+     // 1. Ambil data lama dari atribut tag tombol yang diklik
+     const id = button.getAttribute('data-id');
+     const title = button.getAttribute('data-title');
+     const artistId = button.getAttribute('data-artist');
+     const exhibitionId = button.getAttribute('data-exhibition');
+     const year = button.getAttribute('data-year');
+     const desc = button.getAttribute('data-desc');
 
-        // 2. Set action URL Form secara dinamis mengarah ke endpoint update id-nya
-        document.getElementById('editForm').action = '/admin/karya-seni/edit/' + id;
+     // 2. Set action URL Form secara dinamis mengarah ke endpoint update id-nya
+     document.getElementById('editForm').action = '/admin/karya-seni/edit/' + id;
 
-        // 3. Masukkan data lama ke dalam input field form modal
-        document.getElementById('editTitle').value = title;
-        document.getElementById('editArtistId').value = artistId;
-        document.getElementById('editExhibitionId').value = exhibitionId;
-        document.getElementById('editYear').value = year;
-        document.getElementById('editImageUrl').value = image;
-        document.getElementById('editDescription').value = desc;
+     // 3. Masukkan data lama ke dalam input field form modal
+     document.getElementById('editTitle').value = title;
+     document.getElementById('editArtistId').value = artistId;
+     document.getElementById('editExhibitionId').value = exhibitionId;
+     document.getElementById('editYear').value = year;
+     document.getElementById('editDescription').value = desc;
 
-        // 4. Munculkan modal overlay ke layar
-        document.getElementById('editModal').classList.add('active');
-    }
+     // 💡 Baris 'editImageUrl' sudah dihapus karena input file tidak bisa diisi value text teks lama
 
-    function closeEditModal() {
-        // Sembunyikan kembali modal overlay
-        document.getElementById('editModal').classList.remove('active');
-    }
+     // 4. Munculkan modal overlay ke layar
+     document.getElementById('editModal').classList.add('active');
+ }
+     function closeEditModal() {
+         // Sembunyikan kembali modal overlay
+         document.getElementById('editModal').classList.remove('active');
+     }
 </script>
 
 </body>
