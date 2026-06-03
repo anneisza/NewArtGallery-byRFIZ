@@ -173,10 +173,18 @@
                     <input type="number" name="yearCreated" placeholder="2024">
                 </div>
             </div>
-            <div class="form-group">
-                <label>URL Gambar</label>
-                <input type="text" name="imageUrl" placeholder="https://example.com/image.jpg">
-            </div>
+            <!-- Tambah enctype di tag form tambah -->
+            <form th:action="@{/admin/karya-seni/tambah}" method="post" enctype="multipart/form-data">
+
+                <!-- Ganti input gambar jadi 2 opsi -->
+                <div class="form-group">
+                    <label>Upload File Gambar</label>
+                    <input type="file" name="imageFile" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Atau Masukkan URL Gambar</label>
+                    <input type="text" name="imageUrl" placeholder="https://example.com/image.jpg">
+                </div>
             <div class="form-group">
                 <label>Deskripsi</label>
                 <textarea name="description" rows="4" placeholder="Deskripsi kuratorial mengenai makna seni..."></textarea>
@@ -220,10 +228,18 @@
                     <input type="number" id="editYear" name="yearCreated">
                 </div>
             </div>
-            <div class="form-group">
-                <label>URL Gambar</label>
-                <input type="text" id="editImageUrl" name="imageUrl">
-            </div>
+            <!-- Tambah enctype di form edit -->
+            <form id="editForm" method="post" enctype="multipart/form-data">
+
+                <!-- Ganti input URL Gambar jadi 2 opsi -->
+                <div class="form-group">
+                    <label>Upload File Gambar Baru</label>
+                    <input type="file" name="imageFile" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Atau Ganti dengan URL Gambar</label>
+                    <input type="text" id="editImageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                </div>
             <div class="form-group">
                 <label>Deskripsi</label>
                 <textarea id="editDescription" name="description" rows="4"></textarea>

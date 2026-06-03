@@ -9,8 +9,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 
 @Controller
@@ -61,9 +65,15 @@ public class AdminController {
                               @RequestParam(required = false) Long exhibitionId,
                               @RequestParam(required = false) String description,
                               @RequestParam(required = false) Integer yearCreated,
-                              @RequestParam(required = false) String imageUrl,
-                              RedirectAttributes redirectAttr) {
-        artworkService.create(title, artistId, exhibitionId, description, yearCreated, imageUrl);
+                              @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                              @RequestParam(value = "imageUrl", required = false) String imageUrl,
+                              RedirectAttributes redirectAttr) throws IOException {
+        // File upload prioritas utama, URL sebagai fallback
+        String finalImageUrl = saveFile(imageFile, "artworks");
+        if (finalImageUrl == null && imageUrl != null && !imageUrl.isBlank()) {
+            finalImageUrl = imageUrl;
+        }
+        artworkService.create(title, artistId, exhibitionId, description, yearCreated, finalImageUrl);
         redirectAttr.addFlashAttribute("successMessage", "Karya seni berhasil ditambahkan.");
         return "redirect:/admin/karya-seni";
     }
@@ -75,13 +85,15 @@ public class AdminController {
                             @RequestParam(value = "exhibitionId", required = false) Long exhibitionId,
                             @RequestParam(value = "description", required = false) String description,
                             @RequestParam(value = "yearCreated", required = false) Integer yearCreated,
+                            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
                             @RequestParam(value = "imageUrl", required = false) String imageUrl,
-                            RedirectAttributes redirectAttr) {
-
-        if (imageUrl != null && imageUrl.trim().isEmpty()) imageUrl = null;
-        if (description != null && description.trim().isEmpty()) description = null;
-
-        artworkService.update(id, title, artistId, exhibitionId, description, yearCreated, imageUrl);
+                            RedirectAttributes redirectAttr) throws IOException {
+        // File upload prioritas utama, URL sebagai fallback
+        String finalImageUrl = saveFile(imageFile, "artworks");
+        if (finalImageUrl == null && imageUrl != null && !imageUrl.isBlank()) {
+            finalImageUrl = imageUrl;
+        }
+        artworkService.update(id, title, artistId, exhibitionId, description, yearCreated, finalImageUrl);
         redirectAttr.addFlashAttribute("successMessage", "Karya seni berhasil diperbarui.");
         return "redirect:/admin/karya-seni";
     }
@@ -101,13 +113,28 @@ public class AdminController {
         return "admin/seniman"; // 🔹 Mengarah ke src/main/resources/templates/admin/seniman.html
     }
 
+    private String saveFile(MultipartFile file, String subfolder) throws IOException {
+        if (file == null || file.isEmpty()) return null;
+        String uploadDir = "uploads/" + subfolder + "/";
+        Files.createDirectories(Paths.get(uploadDir));
+        String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Files.write(Paths.get(uploadDir + filename), file.getBytes());
+        return "/" + uploadDir + filename;
+    }
+
     @PostMapping("/seniman/tambah")
     public String tambahSeniman(@RequestParam String name,
                                 @RequestParam(required = false) String specialty,
                                 @RequestParam(required = false) String bio,
-                                @RequestParam(required = false) String photoUrl,
-                                RedirectAttributes redirectAttr) {
-        artistService.create(name, specialty, bio, photoUrl);
+                                @RequestParam(value = "photoFile", required = false) MultipartFile photoFile,
+                                @RequestParam(value = "photoUrl", required = false) String photoUrl,
+                                RedirectAttributes redirectAttr) throws IOException {
+        // File upload prioritas utama, URL sebagai fallback
+        String finalPhotoUrl = saveFile(photoFile, "artists");
+        if (finalPhotoUrl == null && photoUrl != null && !photoUrl.isBlank()) {
+            finalPhotoUrl = photoUrl;
+        }
+        artistService.create(name, specialty, bio, finalPhotoUrl);
         redirectAttr.addFlashAttribute("successMessage", "Seniman berhasil ditambahkan.");
         return "redirect:/admin/seniman";
     }
@@ -117,9 +144,15 @@ public class AdminController {
                               @RequestParam String name,
                               @RequestParam(required = false) String specialty,
                               @RequestParam(required = false) String bio,
-                              @RequestParam(required = false) String photoUrl,
-                              RedirectAttributes redirectAttr) {
-        artistService.update(id, name, specialty, bio, photoUrl);
+                              @RequestParam(value = "photoFile", required = false) MultipartFile photoFile,
+                              @RequestParam(value = "photoUrl", required = false) String photoUrl,
+                              RedirectAttributes redirectAttr) throws IOException {
+        // File upload prioritas utama, URL sebagai fallback
+        String finalPhotoUrl = saveFile(photoFile, "artists");
+        if (finalPhotoUrl == null && photoUrl != null && !photoUrl.isBlank()) {
+            finalPhotoUrl = photoUrl;
+        }
+        artistService.update(id, name, specialty, bio, finalPhotoUrl);
         redirectAttr.addFlashAttribute("successMessage", "Seniman berhasil diperbarui.");
         return "redirect:/admin/seniman";
     }
