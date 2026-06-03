@@ -30,6 +30,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
+                // Tambahkan baris ini ↓
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'self'; " +
+                                        "img-src 'self' data: https: http:; " +
+                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; " +
+                                        "style-src 'self' 'unsafe-inline' https:; " +
+                                        "font-src 'self' https:; " +
+                                        "media-src 'self' https:; " +
+                                        "frame-ancestors 'none'")
+                        )
+                )
+
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home", "/gallery", "/exhibition",
                                 "/artists", "/about", "/css/**", "/js/**",
